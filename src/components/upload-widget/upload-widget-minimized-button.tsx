@@ -1,10 +1,11 @@
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { Maximize2 } from "lucide-react";
+import { UploadWidgetTitle } from "./upload-widget-title";
 
 export function UploadWidgetMinimizedButton() {
   return (
-    <Collapsible.Trigger className="group w-full bg-white/2 py-3 px-5 flex items-center justify-between cursor-pointer">
-      <span className="text-sm font-medium">Upload files</span>
+    <Collapsible.Trigger className="group w-full bg-white/2 py-2 px-4 flex items-center justify-between cursor-pointer">
+      <UploadWidgetTitle />
 
       <Maximize2
         strokeWidth={1.5}
