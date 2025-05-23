@@ -1,19 +1,29 @@
 import * as Collapsible from "@radix-ui/react-collapsible"
-import { useState } from "react"
+import { motion, useCycle } from "motion/react"
 import { UploadWidgetDropzone } from "./upload-widget-dropzone"
 import { UploadWidgetHeader } from "./upload-widget-header"
 import { UploadWidgetList } from "./upload-widget-list"
 import { UploadWidgetMinimizedButton } from "./upload-widget-minimized-button"
 
 export const UploadWidget = () => {
-  const [isWidgetOpen, setIsWidgetOpen] = useState(false)
+  const [isWidgetOpen, toggleWidgetOpen] = useCycle(false, true)
 
   return (
     <Collapsible.Root
-      onOpenChange={setIsWidgetOpen}
       className="w-full flex items-center justify-center"
+      onOpenChange={() => {
+        toggleWidgetOpen()
+      }}
     >
-      <div className="bg-zinc-900 w-full overflow-hidden max-w-[360px] rounded-xl shadow-shape">
+      <motion.div
+        initial={false}
+        animate={isWidgetOpen ? "open" : "closed"}
+        variants={{
+          open: { height: "auto" },
+          closed: { height: 36 },
+        }}
+        className="bg-zinc-900 w-full max-w-[360px] overflow-hidden rounded-xl shadow-shape"
+      >
         {!isWidgetOpen && <UploadWidgetMinimizedButton />}
 
         <Collapsible.Content>
@@ -24,7 +34,7 @@ export const UploadWidget = () => {
             <UploadWidgetList />
           </div>
         </Collapsible.Content>
-      </div>
+      </motion.div>
     </Collapsible.Root>
   )
 }

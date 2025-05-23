@@ -4,7 +4,7 @@ import { UploadWidgetTitle } from "./upload-widget-title"
 
 export function UploadWidgetMinimizedButton() {
   return (
-    <Collapsible.Trigger className="group w-full bg-white/2 py-2 px-4 flex items-center justify-between cursor-pointer">
+    <Collapsible.Trigger className="group h-9 w-full bg-white/2 py-2 px-4 flex items-center justify-between cursor-pointer">
       <UploadWidgetTitle />
 
       <Maximize2
