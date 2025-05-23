@@ -1,12 +1,12 @@
-import { useState } from "react";
-import { UploadWidgetDropzone } from "./upload-widget-dropzone";
-import { UploadWidgetHeader } from "./upload-widget-header";
-import { UploadWidgetList } from "./upload-widget-list";
-import * as Collapsible from "@radix-ui/react-collapsible";
-import { UploadWidgetMinimizedButton } from "./upload-widget-minimized-button";
+import * as Collapsible from "@radix-ui/react-collapsible"
+import { useState } from "react"
+import { UploadWidgetDropzone } from "./upload-widget-dropzone"
+import { UploadWidgetHeader } from "./upload-widget-header"
+import { UploadWidgetList } from "./upload-widget-list"
+import { UploadWidgetMinimizedButton } from "./upload-widget-minimized-button"
 
 export const UploadWidget = () => {
-  const [isWidgetOpen, setIsWidgetOpen] = useState(false);
+  const [isWidgetOpen, setIsWidgetOpen] = useState(false)
 
   return (
     <Collapsible.Root
@@ -26,5 +26,5 @@ export const UploadWidget = () => {
         </Collapsible.Content>
       </div>
     </Collapsible.Root>
-  );
-};
+  )
+}

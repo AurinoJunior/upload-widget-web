@@ -1,4 +1,4 @@
-import { useDropzone } from "react-dropzone";
+import { useDropzone } from "react-dropzone"
 
 export function UploadWidgetDropzone() {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -8,9 +8,9 @@ export function UploadWidgetDropzone() {
       "image/png": [],
     },
     onDrop(acceptedFiles) {
-      console.log(acceptedFiles);
+      console.info(acceptedFiles)
     },
-  });
+  })
 
   return (
     <div className="px-3 flex flex-col gap-3">
@@ -29,5 +29,5 @@ export function UploadWidgetDropzone() {
         Only PNG and JPG files are supported.
       </span>
     </div>
-  );
+  )
 }

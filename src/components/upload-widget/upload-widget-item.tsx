@@ -1,7 +1,7 @@
-import * as Progress from "@radix-ui/react-progress";
+import * as Progress from "@radix-ui/react-progress"
 
-import { Download, ImageUp, Link2, RefreshCcw, X } from "lucide-react";
-import { Button } from "../ui/button";
+import { Download, ImageUp, Link2, RefreshCcw, X } from "lucide-react"
+import { Button } from "../ui/button"
 
 export function UploadWidgetItem() {
   return (
@@ -53,5 +53,5 @@ export function UploadWidgetItem() {
         </Button>
       </div>
     </div>
-  );
+  )
 }

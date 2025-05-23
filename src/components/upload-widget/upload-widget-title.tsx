@@ -1,4 +1,4 @@
-import { UploadCloud } from "lucide-react";
+import { UploadCloud } from "lucide-react"
 
 export function UploadWidgetTitle() {
   return (
@@ -6,5 +6,5 @@ export function UploadWidgetTitle() {
       <UploadCloud className="size-4 text-zinc-400" strokeWidth={1.5} />
       <span>Upload files</span>
     </div>
-  );
+  )
 }

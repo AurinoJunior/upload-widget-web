@@ -1,4 +1,4 @@
-import { UploadWidgetItem } from "./upload-widget-item";
+import { UploadWidgetItem } from "./upload-widget-item"
 
 export function UploadWidgetList() {
   return (
@@ -12,5 +12,5 @@ export function UploadWidgetList() {
         <UploadWidgetItem />
       </div>
     </div>
-  );
+  )
 }

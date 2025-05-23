@@ -1,1 +1,1 @@
-export * from "./upload-widget/upload-widget";
+export * from "./upload-widget/upload-widget"
