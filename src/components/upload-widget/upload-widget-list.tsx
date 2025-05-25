@@ -2,7 +2,7 @@ import { useUploads } from "../../store/uploads"
 import { UploadWidgetItem } from "./upload-widget-item"
 
 export function UploadWidgetList() {
-  const { uploads } = useUploads()
+  const uploads = useUploads(state => state.uploads)
 
   const isUploadListEmpty = false
 

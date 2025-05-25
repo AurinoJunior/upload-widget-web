@@ -13,7 +13,7 @@ export const useUploads = create<UploadState>(set => ({
 
       set(state => {
         return {
-          uploads: state.uploads.set(uploadId, file),
+          uploads: new Map(state.uploads).set(uploadId, file),
         }
       })
     }
