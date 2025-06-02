@@ -2,9 +2,13 @@ import axios from "axios"
 
 interface UploadFileToStorageParams {
   file: File
+  signal?: AbortSignal
 }
 
-export async function uploadFileToStorage({ file }: UploadFileToStorageParams) {
+export async function uploadFileToStorage({
+  file,
+  signal,
+}: UploadFileToStorageParams) {
   const data = new FormData()
 
   data.append("file", file)
@@ -16,6 +20,7 @@ export async function uploadFileToStorage({ file }: UploadFileToStorageParams) {
       headers: {
         "Content-Type": "multipart/form-data",
       },
+      signal,
     }
   )
 
