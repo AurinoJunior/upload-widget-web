@@ -2,6 +2,7 @@ import * as Progress from "@radix-ui/react-progress"
 
 import { Download, ImageUp, Link2, RefreshCcw, X } from "lucide-react"
 import { type Upload, useUploads } from "../../store/uploads"
+import { formatBytes } from "../../utils/format-bytes"
 import { Button } from "../ui/button"
 
 interface UploadWidgetItemProps {
@@ -12,12 +13,18 @@ interface UploadWidgetItemProps {
 export function UploadWidgetItem({ upload, uploadId }: UploadWidgetItemProps) {
   const cancelUpload = useUploads(state => state.cancelUpload)
 
+  const progress = Math.min(
+    Math.round((upload.uploadSizeInBytes * 100) / upload.originalSizeInBytes),
+    100
+  )
+
   const dynamicLabel = {
-    progress: <span>45%</span>,
     success: <span>100%</span>,
+    progress: <span>{progress}%</span>,
     error: <span className="text-red-400">Error</span>,
     canceled: <span className="text-yellow-400">Canceled</span>,
   }
+
   return (
     <div className="p-3 rounded-lg flex flex-col gap-3 shadow-shape-content bg-white/2 relative overflow-hidden">
       <div className="text-xs flex flex-col gap-1">
@@ -32,7 +39,7 @@ export function UploadWidgetItem({ upload, uploadId }: UploadWidgetItemProps) {
         </span>
 
         <span className="text-xs text-zinc-400 flex gap-1.5 items-center">
-          <span className="line-through">{upload.file.size}</span>
+          <span className="line-through">{formatBytes(upload.file.size)}</span>
           <div className="size-1 rounded-full bg-zinc-700" />
           <span>
             300KB
@@ -72,11 +79,16 @@ export function UploadWidgetItem({ upload, uploadId }: UploadWidgetItemProps) {
         </Button>
       </div>
 
-      <Progress.Root className="bg-zinc-800 rounded-full h-1 overflow-hidden">
+      <Progress.Root
+        className="bg-zinc-800 rounded-full h-1 overflow-hidden"
+        value={progress}
+      >
         <Progress.Indicator
           data-status={upload.status}
-          className="bg-indigo-500 h-1 data-[status=success]:bg-green-400 data-[status=error]:bg-red-400 data-[status=canceled]:bg-yellow-400"
-          style={{ width: upload.status === "progress" ? "45%" : "100%" }}
+          className="bg-indigo-500 h-1 data-[status=success]:bg-green-400 data-[status=error]:bg-red-400 data-[status=canceled]:bg-yellow-400 transition-all"
+          style={{
+            width: upload.status === "progress" ? `${progress}%` : "100%",
+          }}
         />
       </Progress.Root>
     </div>

@@ -7,6 +7,8 @@ export type Upload = {
   file: File
   abortController: AbortController
   status: "progress" | "success" | "error" | "canceled"
+  originalSizeInBytes: number
+  uploadSizeInBytes: number
 }
 
 type UploadState = {
@@ -30,6 +32,14 @@ export const useUploads = create<UploadState>((set, get) => {
       await uploadFileToStorage({
         file: upload.file,
         signal: upload.abortController.signal,
+        onProgress(sizeInBytes) {
+          set(state => ({
+            uploads: new Map(state.uploads).set(uploadId, {
+              ...upload,
+              uploadSizeInBytes: sizeInBytes,
+            }),
+          }))
+        },
       })
 
       set(state => ({
@@ -40,7 +50,13 @@ export const useUploads = create<UploadState>((set, get) => {
       }))
     } catch (error) {
       if (error instanceof CanceledError) {
-        return console.error("Upload cancelado pelo usuário!")
+        set(state => ({
+          uploads: new Map(state.uploads).set(uploadId, {
+            ...upload,
+            status: "canceled",
+          }),
+        }))
+        return
       }
 
       set(state => ({
@@ -62,6 +78,8 @@ export const useUploads = create<UploadState>((set, get) => {
           name: file.name,
           abortController: new AbortController(),
           status: "progress",
+          originalSizeInBytes: file.size,
+          uploadSizeInBytes: 0,
         }),
       }))
 
@@ -78,13 +96,6 @@ export const useUploads = create<UploadState>((set, get) => {
     if (!upload) return
 
     upload.abortController.abort()
-
-    set(state => ({
-      uploads: new Map(state.uploads).set(uploadId, {
-        ...upload,
-        status: "canceled",
-      }),
-    }))
   }
 
   return {
