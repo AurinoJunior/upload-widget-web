@@ -3,13 +3,17 @@ import { UploadWidgetItem } from "./upload-widget-item"
 
 export function UploadWidgetList() {
   const uploads = useUploads(state => state.uploads)
+  const amountOfUploads = useUploads(store => store.uploads.size)
 
   const isUploadListEmpty = false
 
   return (
     <div className="px-3 flex flex-col gap-3">
       <span className="text-xs font-medium">
-        Uploaded files <span className="text-zinc-400">(2)</span>
+        Uploaded files{" "}
+        {!!amountOfUploads && (
+          <span className="text-zinc-400">({amountOfUploads})</span>
+        )}
       </span>
 
       {isUploadListEmpty ? (

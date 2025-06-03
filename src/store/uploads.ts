@@ -18,6 +18,20 @@ type UploadState = {
 }
 
 export const useUploads = create<UploadState>((set, get) => {
+  function updateUpload(uploadId: string, data: Partial<Upload>) {
+    const { uploads } = get()
+    const upload = uploads.get(uploadId)
+
+    if (!upload) return
+
+    set(state => ({
+      uploads: new Map(state.uploads).set(uploadId, {
+        ...upload,
+        ...data,
+      }),
+    }))
+  }
+
   async function processUpload({
     uploadId,
   }: {
@@ -27,44 +41,31 @@ export const useUploads = create<UploadState>((set, get) => {
     const upload = uploads.get(uploadId)
 
     if (!upload) return
-
     try {
       await uploadFileToStorage({
         file: upload.file,
         signal: upload.abortController.signal,
         onProgress(sizeInBytes) {
-          set(state => ({
-            uploads: new Map(state.uploads).set(uploadId, {
-              ...upload,
-              uploadSizeInBytes: sizeInBytes,
-            }),
-          }))
+          updateUpload(uploadId, {
+            uploadSizeInBytes: sizeInBytes,
+          })
         },
       })
 
-      set(state => ({
-        uploads: new Map(state.uploads).set(uploadId, {
-          ...upload,
-          status: "success",
-        }),
-      }))
+      updateUpload(uploadId, {
+        status: "success",
+      })
     } catch (error) {
       if (error instanceof CanceledError) {
-        set(state => ({
-          uploads: new Map(state.uploads).set(uploadId, {
-            ...upload,
-            status: "canceled",
-          }),
-        }))
+        updateUpload(uploadId, {
+          status: "canceled",
+        })
         return
       }
 
-      set(state => ({
-        uploads: new Map(state.uploads).set(uploadId, {
-          ...upload,
-          status: "error",
-        }),
-      }))
+      updateUpload(uploadId, {
+        status: "error",
+      })
     }
   }
 
