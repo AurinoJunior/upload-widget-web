@@ -1,4 +1,4 @@
-export function formatBytes(bytes: number): string {
+export function formatBytes(bytes = 0): string {
   if (bytes < 0) {
     throw new Error("Size in bytes cannot be negative")
   }

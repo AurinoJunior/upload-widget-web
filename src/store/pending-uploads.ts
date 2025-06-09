@@ -16,8 +16,12 @@ export const usePendingUploads = () => {
 
       const { total, uploaded } = uploadsInProgress.reduce(
         (acc, upload) => {
-          acc.total += upload.originalSizeInBytes
-          acc.uploaded += upload.uploadSizeInBytes
+          if (upload.compressedSizeInBytes) {
+            acc.uploaded += upload.uploadSizeInBytes
+          }
+
+          acc.total +=
+            upload.compressedSizeInBytes || upload.originalSizeInBytes
 
           return acc
         },

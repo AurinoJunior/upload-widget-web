@@ -1,6 +1,7 @@
 import { CanceledError } from "axios"
 import { create } from "zustand"
 import { uploadFileToStorage } from "../http/upload-file-to-storage"
+import { compressImage } from "../utils/compressed-image"
 
 export type Upload = {
   name: string
@@ -9,6 +10,8 @@ export type Upload = {
   status: "progress" | "success" | "error" | "canceled"
   originalSizeInBytes: number
   uploadSizeInBytes: number
+  compressedSizeInBytes?: number
+  remoteUrl?: string
 }
 
 type UploadState = {
@@ -32,18 +35,25 @@ export const useUploads = create<UploadState>((set, get) => {
     }))
   }
 
-  async function processUpload({
-    uploadId,
-  }: {
-    uploadId: string
-  }) {
+  async function processUpload({ uploadId }: { uploadId: string }) {
     const { uploads } = get()
     const upload = uploads.get(uploadId)
 
     if (!upload) return
     try {
-      await uploadFileToStorage({
+      const compressedFile = await compressImage({
         file: upload.file,
+        maxWidth: 1000,
+        maxHeight: 1000,
+        quality: 0.8,
+      })
+
+      updateUpload(uploadId, {
+        compressedSizeInBytes: compressedFile.size,
+      })
+
+      const { url } = await uploadFileToStorage({
+        file: compressedFile,
         signal: upload.abortController.signal,
         onProgress(sizeInBytes) {
           updateUpload(uploadId, {
@@ -54,6 +64,7 @@ export const useUploads = create<UploadState>((set, get) => {
 
       updateUpload(uploadId, {
         status: "success",
+        remoteUrl: url,
       })
     } catch (error) {
       if (error instanceof CanceledError) {
