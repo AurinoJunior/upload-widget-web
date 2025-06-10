@@ -6,7 +6,7 @@ import { compressImage } from "../utils/compressed-image"
 export type Upload = {
   name: string
   file: File
-  abortController: AbortController
+  abortController?: AbortController
   status: "progress" | "success" | "error" | "canceled"
   originalSizeInBytes: number
   uploadSizeInBytes: number
@@ -18,9 +18,14 @@ type UploadState = {
   uploads: Map<string, Upload>
   addUploads: (files: File[]) => void
   cancelUpload: (uploadId: string) => void
+  retryUpload: (uploadId: string) => void
 }
 
 export const useUploads = create<UploadState>((set, get) => {
+  function retryUpload(uploadId: string) {
+    processUpload({ uploadId })
+  }
+
   function updateUpload(uploadId: string, data: Partial<Upload>) {
     const { uploads } = get()
     const upload = uploads.get(uploadId)
@@ -40,6 +45,17 @@ export const useUploads = create<UploadState>((set, get) => {
     const upload = uploads.get(uploadId)
 
     if (!upload) return
+
+    const abortController = new AbortController()
+
+    updateUpload(uploadId, {
+      uploadSizeInBytes: 0,
+      remoteUrl: undefined,
+      compressedSizeInBytes: undefined,
+      abortController,
+      status: "progress",
+    })
+
     try {
       const compressedFile = await compressImage({
         file: upload.file,
@@ -54,7 +70,7 @@ export const useUploads = create<UploadState>((set, get) => {
 
       const { url } = await uploadFileToStorage({
         file: compressedFile,
-        signal: upload.abortController.signal,
+        signal: abortController.signal,
         onProgress(sizeInBytes) {
           updateUpload(uploadId, {
             uploadSizeInBytes: sizeInBytes,
@@ -88,7 +104,6 @@ export const useUploads = create<UploadState>((set, get) => {
         uploads: new Map(state.uploads).set(uploadId, {
           file,
           name: file.name,
-          abortController: new AbortController(),
           status: "progress",
           originalSizeInBytes: file.size,
           uploadSizeInBytes: 0,
@@ -107,12 +122,13 @@ export const useUploads = create<UploadState>((set, get) => {
 
     if (!upload) return
 
-    upload.abortController.abort()
+    upload.abortController?.abort()
   }
 
   return {
     uploads: new Map(),
     addUploads,
     cancelUpload,
+    retryUpload,
   }
 })

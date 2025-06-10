@@ -12,6 +12,7 @@ interface UploadWidgetItemProps {
 
 export function UploadWidgetItem({ upload, uploadId }: UploadWidgetItemProps) {
   const cancelUpload = useUploads(state => state.cancelUpload)
+  const retryUpload = useUploads(state => state.retryUpload)
 
   const progress = Math.min(
     upload.compressedSizeInBytes
@@ -67,7 +68,12 @@ export function UploadWidgetItem({ upload, uploadId }: UploadWidgetItemProps) {
 
       <div className="absolute top-2.5 right-2.5 flex items-center gap-1">
         <Button size="icon-sm" disabled={upload.status !== "success"} asChild>
-          <a href={upload.remoteUrl} target="_blank" rel="noreferrer">
+          <a
+            href={upload.remoteUrl}
+            aria-disabled={upload.status !== "success"}
+            target="_blank"
+            rel="noreferrer"
+          >
             <Download className="size-4" strokeWidth={1.5} />
             <span className="sr-only">Download compressed image</span>
           </a>
@@ -76,6 +82,7 @@ export function UploadWidgetItem({ upload, uploadId }: UploadWidgetItemProps) {
         <Button
           disabled={!["canceled", "error"].includes(upload.status)}
           size="icon-sm"
+          onClick={() => retryUpload(uploadId)}
         >
           <RefreshCcw className="size-4" strokeWidth={1.5} />
           <span className="sr-only">Retry upload</span>
