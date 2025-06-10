@@ -1,6 +1,6 @@
 import * as Progress from "@radix-ui/react-progress"
 
-import { Download, ImageUp, Link2, RefreshCcw, X } from "lucide-react"
+import { Download, ImageUp, RefreshCcw, X } from "lucide-react"
 import { type Upload, useUploads } from "../../store/uploads"
 import { formatBytes } from "../../utils/format-bytes"
 import { Button } from "../ui/button"
@@ -29,6 +29,13 @@ export function UploadWidgetItem({ upload, uploadId }: UploadWidgetItemProps) {
     canceled: <span className="text-yellow-400">Canceled</span>,
   }
 
+  const compressedPercent = upload.compressedSizeInBytes
+    ? `-${Math.round(
+        ((upload.originalSizeInBytes - upload.compressedSizeInBytes) * 100) /
+          upload.originalSizeInBytes
+      )}%`
+    : ""
+
   return (
     <div className="p-3 rounded-lg flex flex-col gap-3 shadow-shape-content bg-white/2 relative overflow-hidden">
       <div className="text-xs flex flex-col gap-1">
@@ -49,7 +56,9 @@ export function UploadWidgetItem({ upload, uploadId }: UploadWidgetItemProps) {
           <div className="size-1 rounded-full bg-zinc-700" />
           <span>
             {formatBytes(upload.compressedSizeInBytes) ?? ""}
-            <span className="text-green-400 ml-1">-94%</span>
+            {compressedPercent && (
+              <span className="text-green-400 ml-1">{compressedPercent}</span>
+            )}
           </span>
           <div className="size-1 rounded-full bg-zinc-700" />
           {dynamicLabel[upload.status]}
@@ -57,20 +66,11 @@ export function UploadWidgetItem({ upload, uploadId }: UploadWidgetItemProps) {
       </div>
 
       <div className="absolute top-2.5 right-2.5 flex items-center gap-1">
-        <Button size="icon-sm" disabled={upload.status !== "success"}>
-          <Download className="size-4" strokeWidth={1.5} />
-          <span className="sr-only">Download compressed image</span>
-        </Button>
-
-        <Button
-          size="icon-sm"
-          disabled={!upload.remoteUrl}
-          onClick={() =>
-            upload.remoteUrl && navigator.clipboard.writeText(upload.remoteUrl)
-          }
-        >
-          <Link2 className="size-4" strokeWidth={1.5} />
-          <span className="sr-only">Copy remote URL</span>
+        <Button size="icon-sm" disabled={upload.status !== "success"} asChild>
+          <a href={upload.remoteUrl} target="_blank" rel="noreferrer">
+            <Download className="size-4" strokeWidth={1.5} />
+            <span className="sr-only">Download compressed image</span>
+          </a>
         </Button>
 
         <Button
